@@ -3,39 +3,35 @@ pipeline {
 
     agent any
     stages{
-        stage('Checkout GIT'){
+       stage('Checkout GIT'){
          steps {
              echo 'Pulling ...';
-              git branch: 'hamza',
-              url : 'https://github.com/hajerhassine/ProjetDevOps.git'
+              git branch: 'nawres',
+              url : 'https://github.com/NawresCH17/Achat-Devops.git'
          } 
 
-        }
-
-
-
-        stage('Testing maven'){
+       }
+       stage('Testing maven'){
             steps {
                 sh """mvn -version """
             }
-
-        }
-        stage('MVN CLEAN'){
+       }
+       stage('MVN CLEAN'){
             steps {
                 sh 'mvn clean'
             }
-        }
-        stage('MVN COMPILE'){
+       }
+       stage('MVN COMPILE'){
             steps {
                 sh 'mvn compile'
             }
-        }
-		stage('SonarQube analysis 1') {
+       }
+	   stage('SonarQube analysis 1') {
             steps {
-                sh 'mvn sonar:sonar -Dsonar.login=admin -Dsonar.password=lassoued'
+                sh 'mvn sonar:sonar -Dsonar.login=admin -Dsonar.password=sonar'
             }
-        }
-        stage('JUnit and Mockito Test'){
+       }
+       stage('JUnit and Mockito Test'){
             steps{
                 script
                 {
@@ -48,52 +44,37 @@ pipeline {
                         bat 'mvn --batch-mode test'
                     }
                 }
-            }
-        }        
-
-          stage('MVN Nexus'){
+            }        
+       }        
+       stage('MVN Nexus'){
             steps {
                 sh 'mvn deploy'
             } 
-            }         
-        stage('Building image docker-compose') {
+       }         
+       stage('Building image docker-compose') {
           steps {
-
               sh "docker-compose up -d"
           }
-        }
-
-         stage('Build image') {
+       }
+       stage('Build image') {
           steps {
-            sh "docker build -t lassoued404/imagedevops ."
-       		}
-       		}
-    		
+            sh "docker build -t nawreschouari/achat_devops ."
+       	  }
+       }	
  	   stage('Push image') {
  	    steps {
  	       withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
- 			
-        	 sh "docker push lassoued404/imagedevops"
+ 			sh "docker push nawreschouari/achat_devops"
         	}
-        	}
-        	}
-
-
-         stage('Cleaning up') {
+             }
+       }
+       stage('Cleaning up') {
  	    steps {
  	       withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
  			
-        	 sh "docker rmi -f lassoued404/imagedevops"
+        	 sh "docker rmi -f nawreschouari/achat_devops"
         	}
-        	}
-        	}
-
-
-	  stage("Email"){
-          steps{
-               emailext attachLog: true, body: "the result is :  ${currentBuild.result}", compressLog: true, subject: "Status of pipeline: ${currentBuild.fullDisplayName}", to: 'hamza.lassoued@esprit.tn'
-           }
-           } 
-
-    }
+             }
+        }
+   }
 }
