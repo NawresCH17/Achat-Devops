@@ -46,11 +46,11 @@ pipeline {
                 }
             }        
        }        
-       stage('MVN Nexus'){
+       /*stage('MVN Nexus'){
             steps {
                 sh 'mvn deploy'
             } 
-       }         
+       } */       
        stage('Building image docker-compose') {
           steps {
               sh "docker-compose up -d"
@@ -68,13 +68,13 @@ pipeline {
         	}
              }
        }
-       stage('Cleaning up') {
+       /*stage('Cleaning up') {
  	    steps {
  	       withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
  			
         	 sh "docker rmi -f nawreschouari/achat_devops"
         	}
              }
-        }
+        }*/
    }
 }
